@@ -75,6 +75,12 @@ static) and attached to each release here. The database is:
 Both are fixed permanently. Downloader tracks installed files by database id, so
 changing either would duplicate files on every SD card and break cleanup.
 
+## License
+
+The contents of this repository are [MIT](LICENSE) licensed. The
+`1retro-mister` binary attached to releases is not open source, and is
+distributed for use with a 1Retro account.
+
 ## Support
 
 Issues and questions: [1retro.com](https://1retro.com) or the
