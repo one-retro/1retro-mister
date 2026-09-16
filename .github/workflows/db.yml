@@ -1,0 +1,68 @@
+name: database
+
+# Rebuild the Downloader database whenever a release is published. The release
+# itself is cut from the 1Retro source tree (`just publish-mister-release`),
+# which attaches the binary; this workflow attaches the wrappers that live here,
+# then regenerates the database from the finished release.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  database:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Through the environment, never interpolated into the script: a tag name
+      # is attacker-chosen text as far as the shell is concerned.
+      - name: Resolve the release tag
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          tag="$RELEASE_TAG"
+          [ -n "$tag" ] || tag=$(gh release view --json tagName --jq .tagName)
+          echo "TAG=$tag" >>"$GITHUB_ENV"
+
+      - name: Attach the wrappers to the release
+        run: |
+          gh release upload "$TAG" \
+            scripts/1retro-mister-sync.sh \
+            scripts/1retro-mister-daemon.sh \
+            --clobber
+
+      # The database lives on its own orphan branch so its history never mixes
+      # with the source, and so raw.githubusercontent.com can serve it at a URL
+      # that is fixed forever.
+      - name: Check out the database branch
+        run: |
+          url="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          if git ls-remote --exit-code --heads "$url" db >/dev/null 2>&1; then
+            git clone --branch db --single-branch "$url" out
+          else
+            mkdir out
+            git -C out init -b db
+            git -C out remote add origin "$url"
+          fi
+
+      - name: Generate
+        run: python3 generate_db.py --tag "$TAG" --out out
+
+      - name: Publish
+        run: |
+          cd out
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "database unchanged"
+            exit 0
+          fi
+          git commit -m "db: $TAG"
+          git push origin HEAD:db
