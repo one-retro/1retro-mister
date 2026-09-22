@@ -5,7 +5,7 @@ Reads a published GitHub release, hashes the three files it carries, and writes
 the two artifacts Downloader and users fetch:
 
     db.json.zip            the database itself
-    downloader_1retro.zip  the drop-in ini pointing at it
+    downloader_1retro.ini  the drop-in that points at it, copied to the card
 
 Both land in --out, which in CI is a checkout of the orphan `db` branch, so a
 run that changes nothing leaves no diff to commit.
@@ -139,10 +139,21 @@ def main():
     }
     write_zip(db_zip, "db.json", json.dumps(db, indent=2, sort_keys=True))
 
-    ini = f"[{DB_ID}]\ndb_url = {db_url}\ndescription = 1Retro save sync\n"
-    write_zip(args.out / f"downloader_{DB_ID}.zip", f"downloader_{DB_ID}.ini", ini)
+    # The drop-in goes out as a plain file rather than a zip. Nothing reads it
+    # as an archive: Downloader wants the ini itself on the card, so a zip only
+    # adds an unzip step on a device that may not have one, where a plain file
+    # makes the whole install a single wget.
+    ini_path = args.out / f"downloader_{DB_ID}.ini"
+    ini_path.write_text(f"[{DB_ID}]\ndb_url = {db_url}\ndescription = 1Retro save sync\n")
 
-    print(f"wrote {db_zip} and {args.out / f'downloader_{DB_ID}.zip'}")
+    # The db branch is only ever updated by writing into a checkout of it, so a
+    # file we stop writing would sit there forever unless it is removed.
+    stale_zip = args.out / f"downloader_{DB_ID}.zip"
+    if stale_zip.exists():
+        stale_zip.unlink()
+        print(f"removed {stale_zip}")
+
+    print(f"wrote {db_zip} and {ini_path}")
 
 
 if __name__ == "__main__":

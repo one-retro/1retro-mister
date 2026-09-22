@@ -13,11 +13,20 @@ is linked to it once from the Scripts menu.
 This is the one that keeps itself up to date: every `update_all` run from then
 on installs the current version.
 
-1. Download [`downloader_1retro.zip`](https://raw.githubusercontent.com/one-retro/1retro-mister/db/downloader_1retro.zip).
-2. Extract it into `/media/fat` on the SD card. It contains a single small
-   `downloader_1retro.ini`, which the Downloader picks up on its own. Nothing
-   else needs editing.
-3. Run **Update All** (or **Downloader**) from the Scripts menu.
+Over SSH, the whole install is one line:
+
+```sh
+wget -O /media/fat/downloader_1retro.ini \
+  https://raw.githubusercontent.com/one-retro/1retro-mister/db/downloader_1retro.ini
+```
+
+Or save [`downloader_1retro.ini`](https://raw.githubusercontent.com/one-retro/1retro-mister/db/downloader_1retro.ini)
+onto the card as `/media/fat/downloader_1retro.ini` from a desktop.
+
+Then run **Update All** (or **Downloader**) from the Scripts menu. Downloader
+reads every `/media/fat/downloader_*.ini` on each run, so nothing else needs
+editing, and 1Retro is installed and upgraded along with everything else from
+then on.
 
 ## Install by hand
 
