@@ -33,6 +33,7 @@ jobs:
       - name: Attach the wrappers to the release
         run: |
           gh release upload "$TAG" \
+            scripts/1retro.sh \
             scripts/1retro-mister-sync.sh \
             scripts/1retro-mister-daemon.sh \
             --clobber

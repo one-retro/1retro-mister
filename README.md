@@ -33,47 +33,62 @@ then on.
 ```sh
 cd /media/fat/Scripts
 wget https://github.com/one-retro/1retro-mister/releases/latest/download/1retro-mister
+wget https://github.com/one-retro/1retro-mister/releases/latest/download/1retro.sh
 wget https://github.com/one-retro/1retro-mister/releases/latest/download/1retro-mister-sync.sh
 wget https://github.com/one-retro/1retro-mister/releases/latest/download/1retro-mister-daemon.sh
-chmod +x 1retro-mister 1retro-mister-sync.sh 1retro-mister-daemon.sh
+chmod +x 1retro-mister 1retro.sh 1retro-mister-sync.sh 1retro-mister-daemon.sh
 ```
 
 Re-run those to upgrade. Nothing else on the MiSTer is touched.
 
 ## First run
 
-Pick **1retro-mister-sync** from the Scripts menu. The first run shows a code
-and a URL on screen: open it on your phone or desktop to link the MiSTer to your
-account. After that it syncs and drops back to the menu.
+Pick **1retro** from the Scripts menu. The first run shows a code and a URL on
+screen: open it on your phone or desktop to link the MiSTer to your account.
 
 Everything the tool stores lives in `/media/fat/1retro`, and nothing removes it,
 including an upgrade.
 
-## Sync in the background
+## The menu
 
-**1retro-mister-daemon** from the Scripts menu starts a background sync that
-watches for save changes. From a shell it also takes `start`, `stop`, `restart`
-and `status`:
+**1retro** from the Scripts menu is where everything lives. Move with up and
+down on the controller, A to select, B to leave. No keyboard, no SSH, and
+nothing to edit on the card:
+
+- **Sync saves**: upload what changed here, download what changed elsewhere.
+- **Watch for saves**: keep syncing in the background after you leave. Saves go
+  up as a core writes them, and anything saved on another device comes down.
+- **Start watching at boot**: start that again after a restart. It adds one
+  guarded line to `/media/fat/linux/user-startup.sh` and takes it back out when
+  you turn the option off, leaving every other line in that file alone.
+- **Sign out**: forget the login on this device.
+
+Underneath, it shows the account this MiSTer is signed in as, when it last
+synced, and how many saves it is tracking.
+
+Opening the menu pauses a running background sync and starts it again on the way
+out, because both want the same state database.
+
+## From a shell
+
+The other two Scripts entries each do one thing without asking, which is what
+you want over SSH or from another script:
 
 ```sh
-/media/fat/Scripts/1retro-mister-daemon.sh status
+/media/fat/Scripts/1retro-mister-sync.sh          # sync once
+/media/fat/Scripts/1retro-mister-daemon.sh start  # also stop, restart, status
 ```
 
-Logs land in `/media/fat/1retro/daemon.log`, one generation of rotation. To
-start it at boot, append this to `/media/fat/linux/user-startup.sh`:
-
-```sh
-/media/fat/Scripts/1retro-mister-daemon.sh start
-```
+Logs land in `/media/fat/1retro/daemon.log`, one generation of rotation.
 
 ## What is in this repo
 
 | Path                     | What it is                                                     |
 | ------------------------ | -------------------------------------------------------------- |
-| `scripts/`               | The two Scripts-menu wrappers, attached to every release        |
+| `scripts/`               | The three Scripts-menu entries, attached to every release       |
 | `generate_db.py`         | Builds the Downloader database from a published release         |
 | `.github/workflows/db.yml` | Runs the generator when a release is published                |
-| `db` branch              | The generated `db.json.zip` and `downloader_1retro.zip`         |
+| `db` branch              | The generated `db.json.zip` and `downloader_1retro.ini`         |
 
 The `1retro-mister` binary is built from the 1Retro source tree (armv7 musl,
 static) and attached to each release here. The database is:
