@@ -32,11 +32,7 @@ jobs:
 
       - name: Attach the wrappers to the release
         run: |
-          gh release upload "$TAG" \
-            scripts/1retro.sh \
-            scripts/1retro-mister-sync.sh \
-            scripts/1retro-mister-daemon.sh \
-            --clobber
+          gh release upload "$TAG" scripts/1retro.sh --clobber
 
       # The database lives on its own orphan branch so its history never mixes
       # with the source, and so raw.githubusercontent.com can serve it at a URL

@@ -42,8 +42,6 @@ DEFAULT_REPO = "one-retro/1retro-mister"
 INSTALL = {
     "1retro-mister": "Scripts/1retro-mister",
     "1retro.sh": "Scripts/1retro.sh",
-    "1retro-mister-sync.sh": "Scripts/1retro-mister-sync.sh",
-    "1retro-mister-daemon.sh": "Scripts/1retro-mister-daemon.sh",
 }
 
 

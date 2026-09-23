@@ -34,9 +34,7 @@ then on.
 cd /media/fat/Scripts
 wget https://github.com/one-retro/1retro-mister/releases/latest/download/1retro-mister
 wget https://github.com/one-retro/1retro-mister/releases/latest/download/1retro.sh
-wget https://github.com/one-retro/1retro-mister/releases/latest/download/1retro-mister-sync.sh
-wget https://github.com/one-retro/1retro-mister/releases/latest/download/1retro-mister-daemon.sh
-chmod +x 1retro-mister 1retro.sh 1retro-mister-sync.sh 1retro-mister-daemon.sh
+chmod +x 1retro-mister 1retro.sh
 ```
 
 Re-run those to upgrade. Nothing else on the MiSTer is touched.
@@ -71,21 +69,23 @@ out, because both want the same state database.
 
 ## From a shell
 
-The other two Scripts entries each do one thing without asking, which is what
-you want over SSH or from another script:
+The binary sits next to the script and does the same jobs without the menu,
+which is what you want over SSH or from another script:
 
 ```sh
-/media/fat/Scripts/1retro-mister-sync.sh          # sync once
-/media/fat/Scripts/1retro-mister-daemon.sh start  # also stop, restart, status
+/media/fat/Scripts/1retro-mister sync     # sync once and exit
+/media/fat/Scripts/1retro-mister watch    # keep syncing in the foreground
+/media/fat/Scripts/1retro-mister --help
 ```
 
-Logs land in `/media/fat/1retro/daemon.log`, one generation of rotation.
+Background logs land in `/media/fat/1retro/daemon.log`, rewritten each time the
+watcher starts so it cannot grow without bound.
 
 ## What is in this repo
 
 | Path                     | What it is                                                     |
 | ------------------------ | -------------------------------------------------------------- |
-| `scripts/`               | The three Scripts-menu entries, attached to every release       |
+| `scripts/1retro.sh`      | The one Scripts-menu entry, attached to every release            |
 | `generate_db.py`         | Builds the Downloader database from a published release         |
 | `.github/workflows/db.yml` | Runs the generator when a release is published                |
 | `db` branch              | The generated `db.json.zip` and `downloader_1retro.ini`         |
