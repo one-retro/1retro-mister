@@ -8,10 +8,11 @@ left off on a handheld or an emulator.
 Part of [1Retro](https://1retro.com). You need a 1Retro account, and the MiSTer
 is linked to it once from the Scripts menu.
 
-## Install with Update All (recommended)
+## Install
 
-This is the one that keeps itself up to date: every `update_all` run from then
-on installs the current version.
+Point the MiSTer Downloader at 1Retro once. Every `update_all` run from then on
+installs and upgrades it along with everything else on the card, so there is
+never anything to re-download by hand.
 
 Over SSH, the whole install is one line:
 
@@ -27,17 +28,6 @@ Then run **Update All** (or **Downloader**) from the Scripts menu. Downloader
 reads every `/media/fat/downloader_*.ini` on each run, so nothing else needs
 editing, and 1Retro is installed and upgraded along with everything else from
 then on.
-
-## Install by hand
-
-```sh
-cd /media/fat/Scripts
-wget https://github.com/one-retro/1retro-mister/releases/latest/download/1retro-mister
-wget https://github.com/one-retro/1retro-mister/releases/latest/download/1retro.sh
-chmod +x 1retro-mister 1retro.sh
-```
-
-Re-run those to upgrade. Nothing else on the MiSTer is touched.
 
 ## First run
 
